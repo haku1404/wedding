@@ -353,6 +353,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initTimelineDraw();
     initInstantsWidget();
     initScheduleFlip();
+    if (typeof initGuestbook === 'function') initGuestbook();
     initRSVP();
   });
 });
