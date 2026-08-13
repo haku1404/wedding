@@ -112,18 +112,18 @@ function initTimelineDraw() {
 }
 
 const INSTANTS_DATA = [
-  { id: 1, title: 'Lần đầu gặp gỡ', date: 'Mùa thu 2019', icon: '✨', bg: 'linear-gradient(135deg, #6B4984, #B48A6A)' },
-  { id: 2, title: 'Buổi hẹn hò đầu tiên', date: 'Cuối năm 2019', icon: '☕', bg: 'linear-gradient(135deg, #8A5A44, #C9A678)' },
-  { id: 3, title: 'Chuyến đi Đà Lạt', date: 'Mùa xuân 2020', icon: '🌲', bg: 'linear-gradient(135deg, #3A5A40, #A8AE9C)' },
-  { id: 4, title: 'Kỷ niệm 1 năm yêu', date: 'Mùa thu 2020', icon: '💐', bg: 'linear-gradient(135deg, #B56576, #E8C9C4)' },
-  { id: 5, title: 'Sinh nhật ngọt ngào', date: 'Đầu năm 2021', icon: '🎂', bg: 'linear-gradient(135deg, #583101, #C5A880)' },
-  { id: 6, title: 'Mùa thu Hà Nội', date: 'Mùa thu 2021', icon: '🍂', bg: 'linear-gradient(135deg, #9C6644, #D4B295)' },
-  { id: 7, title: 'Chuyến du lịch biển', date: 'Mùa hè 2022', icon: '🌊', bg: 'linear-gradient(135deg, #2A6F97, #89C2D9)' },
-  { id: 8, title: 'Kỷ niệm 3 năm', date: 'Mùa thu 2022', icon: '🥂', bg: 'linear-gradient(135deg, #6B4E71, #C9A678)' },
-  { id: 9, title: 'Đón năm mới', date: 'Đầu năm 2023', icon: '🎆', bg: 'linear-gradient(135deg, #3D5A80, #98C1D9)' },
-  { id: 10, title: 'Ngày bình dị', date: 'Năm 2024', icon: '🌿', bg: 'linear-gradient(135deg, #52796F, #CAD2C5)' },
-  { id: 11, title: 'Lời cầu hôn', date: 'Đầu năm 2026', icon: '💍', bg: 'linear-gradient(135deg, #9E2A2B, #E8C9C4)' },
-  { id: 12, title: 'Về chung một nhà', date: 'Đầu năm 2027', icon: '💒', bg: 'linear-gradient(135deg, #6B4984, #C9A678)' }
+  { id: 1, title: 'Lần đầu gặp gỡ', date: 'Mùa thu 2019', icon: '✨', bg: 'linear-gradient(135deg, #6B4984, #B48A6A)', tilt: -2 },
+  { id: 2, title: 'Buổi hẹn hò đầu tiên', date: 'Cuối năm 2019', icon: '☕', bg: 'linear-gradient(135deg, #8A5A44, #C9A678)', tilt: 3 },
+  { id: 3, title: 'Chuyến đi Đà Lạt', date: 'Mùa xuân 2020', icon: '🌲', bg: 'linear-gradient(135deg, #3A5A40, #A8AE9C)', tilt: -4 },
+  { id: 4, title: 'Kỷ niệm 1 năm yêu', date: 'Mùa thu 2020', icon: '💐', bg: 'linear-gradient(135deg, #B56576, #E8C9C4)', tilt: 2 },
+  { id: 5, title: 'Sinh nhật ngọt ngào', date: 'Đầu năm 2021', icon: '🎂', bg: 'linear-gradient(135deg, #583101, #C5A880)', tilt: -3 },
+  { id: 6, title: 'Mùa thu Hà Nội', date: 'Mùa thu 2021', icon: '🍂', bg: 'linear-gradient(135deg, #9C6644, #D4B295)', tilt: 4 },
+  { id: 7, title: 'Chuyến du lịch biển', date: 'Mùa hè 2022', icon: '🌊', bg: 'linear-gradient(135deg, #2A6F97, #89C2D9)', tilt: -2 },
+  { id: 8, title: 'Kỷ niệm 3 năm', date: 'Mùa thu 2022', icon: '🥂', bg: 'linear-gradient(135deg, #6B4E71, #C9A678)', tilt: 3 },
+  { id: 9, title: 'Đón năm mới', date: 'Đầu năm 2023', icon: '🎆', bg: 'linear-gradient(135deg, #3D5A80, #98C1D9)', tilt: -4 },
+  { id: 10, title: 'Ngày bình dị', date: 'Năm 2024', icon: '🌿', bg: 'linear-gradient(135deg, #52796F, #CAD2C5)', tilt: 2 },
+  { id: 11, title: 'Lời cầu hôn', date: 'Đầu năm 2026', icon: '💍', bg: 'linear-gradient(135deg, #9E2A2B, #E8C9C4)', tilt: -3 },
+  { id: 12, title: 'Về chung một nhà', date: 'Đầu năm 2027', icon: '💒', bg: 'linear-gradient(135deg, #6B4984, #C9A678)', tilt: 4 }
 ];
 
 function initInstantsWidget() {
@@ -142,8 +142,12 @@ function initInstantsWidget() {
   let currentDeltaY = 0;
   let startTime = 0;
 
-  function renderCard(cardEl, dataIndex) {
-    const data = INSTANTS_DATA[(dataIndex % INSTANTS_DATA.length + INSTANTS_DATA.length) % INSTANTS_DATA.length];
+  function getPhotoData(dataIndex) {
+    return INSTANTS_DATA[(dataIndex % INSTANTS_DATA.length + INSTANTS_DATA.length) % INSTANTS_DATA.length];
+  }
+
+  function renderCard(cardEl, dataIndex, layer) {
+    const data = getPhotoData(dataIndex);
     const content = cardEl.querySelector('.instants-card__content');
     if (!content) return;
     content.style.background = data.bg;
@@ -152,12 +156,21 @@ function initInstantsWidget() {
       <h3 class="instants-card__title">${data.title}</h3>
       <div class="instants-card__date">${data.date}</div>
     `;
+
+    if (layer === 'middle') {
+      cardEl.style.transform = `translate3d(0, 8px, 0) rotate(${data.tilt}deg) scale(0.95)`;
+    } else if (layer === 'bottom') {
+      cardEl.style.transform = `translate3d(0, 16px, 0) rotate(${data.tilt}deg) scale(0.90)`;
+    } else if (layer === 'top' && !isDragging && !isAnimating) {
+      cardEl.style.transform = `translate3d(0, 0, 0) rotate(${data.tilt}deg) scale(1)`;
+      cardEl.style.opacity = '1';
+    }
   }
 
   function renderAllCards() {
-    renderCard(cardTop, currentIndex);
-    renderCard(cardMiddle, currentIndex + 1);
-    renderCard(cardBottom, currentIndex + 2);
+    renderCard(cardTop, currentIndex, 'top');
+    renderCard(cardMiddle, currentIndex + 1, 'middle');
+    renderCard(cardBottom, currentIndex + 2, 'bottom');
   }
 
   function onPointerDown(e) {
@@ -184,10 +197,12 @@ function initInstantsWidget() {
     currentDeltaX = x - startX;
     currentDeltaY = y - startY;
 
-    const rotateDeg = (currentDeltaX / 300) * 18;
+    const currentData = getPhotoData(currentIndex);
+    const baseTilt = currentData.tilt || 0;
+    const dragRotate = (currentDeltaX / 300) * 18;
     const opacity = Math.max(0, 1 - Math.abs(currentDeltaX) / 450);
 
-    cardTop.style.transform = `translate3d(${currentDeltaX}px, ${currentDeltaY}px, 0) rotate(${rotateDeg}deg)`;
+    cardTop.style.transform = `translate3d(${currentDeltaX}px, ${currentDeltaY}px, 0) rotate(${baseTilt + dragRotate}deg)`;
     cardTop.style.opacity = opacity;
   }
 
@@ -219,8 +234,10 @@ function initInstantsWidget() {
     isAnimating = true;
     cardTop.classList.add('is-animating');
 
+    const currentData = getPhotoData(currentIndex);
+    const baseTilt = currentData.tilt || 0;
     const flyX = direction * 450;
-    const flyRot = direction * 28;
+    const flyRot = baseTilt + direction * 28;
 
     cardTop.style.transform = `translate3d(${flyX}px, ${currentDeltaY * 1.1}px, 0) rotate(${flyRot}deg)`;
     cardTop.style.opacity = '0';
@@ -230,18 +247,18 @@ function initInstantsWidget() {
 
       // Reset cardTop styles without animation transition
       cardTop.classList.remove('is-animating');
-      cardTop.style.transform = 'translate3d(0, 0, 0) rotate(0deg)';
-      cardTop.style.opacity = '1';
 
-      // Update all 3 cards in background seamlessly
+      // Update all 3 cards in background seamlessly keeping natural organic tilts
       renderAllCards();
       isAnimating = false;
     }, 260);
   }
 
   function resetToCenter() {
+    const currentData = getPhotoData(currentIndex);
+    const baseTilt = currentData.tilt || 0;
     cardTop.classList.add('is-animating');
-    cardTop.style.transform = 'translate3d(0, 0, 0) rotate(0deg)';
+    cardTop.style.transform = `translate3d(0, 0, 0) rotate(${baseTilt}deg)`;
     cardTop.style.opacity = '1';
     setTimeout(() => cardTop.classList.remove('is-animating'), 260);
   }
