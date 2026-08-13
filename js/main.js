@@ -346,6 +346,64 @@ function initRSVP() {
   });
 }
 
+function initBackgroundMusic() {
+  const musicBtn = document.getElementById('music-toggle');
+  if (!musicBtn) return;
+
+  const musicUrl = (typeof CONFIG !== 'undefined' && CONFIG.MUSIC_URL)
+    ? CONFIG.MUSIC_URL
+    : 'https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=romantic-wedding-piano-112191.mp3';
+
+  const audio = new Audio(musicUrl);
+  audio.loop = true;
+  let isPlaying = false;
+
+  function playMusic() {
+    audio.play().then(() => {
+      isPlaying = true;
+      musicBtn.classList.add('is-playing');
+      musicBtn.querySelector('.music-toggle__disc').textContent = '🎵';
+      musicBtn.setAttribute('title', 'Tắt nhạc nền Piano A Thousand Years');
+    }).catch(() => {
+      isPlaying = false;
+      musicBtn.classList.remove('is-playing');
+      musicBtn.querySelector('.music-toggle__disc').textContent = '🔇';
+      musicBtn.setAttribute('title', 'Bật nhạc nền Piano A Thousand Years');
+    });
+  }
+
+  function pauseMusic() {
+    audio.pause();
+    isPlaying = false;
+    musicBtn.classList.remove('is-playing');
+    musicBtn.querySelector('.music-toggle__disc').textContent = '🔇';
+    musicBtn.setAttribute('title', 'Bật nhạc nền Piano A Thousand Years');
+  }
+
+  musicBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (isPlaying) {
+      pauseMusic();
+    } else {
+      playMusic();
+    }
+  });
+
+  // Autoplay on first user interaction anywhere on page
+  function handleFirstUserGesture() {
+    if (!isPlaying) {
+      playMusic();
+    }
+    window.removeEventListener('click', handleFirstUserGesture);
+    window.removeEventListener('touchstart', handleFirstUserGesture);
+    window.removeEventListener('keydown', handleFirstUserGesture);
+  }
+
+  window.addEventListener('click', handleFirstUserGesture);
+  window.addEventListener('touchstart', handleFirstUserGesture);
+  window.addEventListener('keydown', handleFirstUserGesture);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   initPreloader(() => {
     initHeroEntrance();
@@ -355,5 +413,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initScheduleFlip();
     if (typeof initGuestbook === 'function') initGuestbook();
     initRSVP();
+    initBackgroundMusic();
   });
 });

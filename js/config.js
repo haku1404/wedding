@@ -9,5 +9,8 @@ const CONFIG = {
   GOOGLE_SHEET_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbxMiFH7irId69hfsFHJkQGe3jBI92F0U7cK6FBlEj1NLXwGkXQGgEf0hraNfSRYwPy3/exec',
 
   // Admin PIN code for secret delete switch
-  ADMIN_PIN: '1404'
+  ADMIN_PIN: '1404',
+
+  // Background Piano Music URL (Piano A Thousand Years / Romantic Wedding Piano)
+  MUSIC_URL: 'https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=romantic-wedding-piano-112191.mp3'
 };
