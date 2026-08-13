@@ -128,9 +128,10 @@ const INSTANTS_DATA = [
 
 function initInstantsWidget() {
   const cardTop = document.getElementById('card-top');
-  const cardContent = document.getElementById('card-content');
+  const cardMiddle = document.getElementById('card-middle');
+  const cardBottom = document.getElementById('card-bottom');
 
-  if (!cardTop || !cardContent) return;
+  if (!cardTop || !cardMiddle || !cardBottom) return;
 
   let currentIndex = 0;
   let isDragging = false;
@@ -141,14 +142,22 @@ function initInstantsWidget() {
   let currentDeltaY = 0;
   let startTime = 0;
 
-  function renderPhoto(index) {
-    const data = INSTANTS_DATA[(index + INSTANTS_DATA.length) % INSTANTS_DATA.length];
-    cardContent.style.background = data.bg;
-    cardContent.innerHTML = `
+  function renderCard(cardEl, dataIndex) {
+    const data = INSTANTS_DATA[(dataIndex % INSTANTS_DATA.length + INSTANTS_DATA.length) % INSTANTS_DATA.length];
+    const content = cardEl.querySelector('.instants-card__content');
+    if (!content) return;
+    content.style.background = data.bg;
+    content.innerHTML = `
       <div class="instants-card__icon">${data.icon}</div>
       <h3 class="instants-card__title">${data.title}</h3>
       <div class="instants-card__date">${data.date}</div>
     `;
+  }
+
+  function renderAllCards() {
+    renderCard(cardTop, currentIndex);
+    renderCard(cardMiddle, currentIndex + 1);
+    renderCard(cardBottom, currentIndex + 2);
   }
 
   function onPointerDown(e) {
@@ -198,61 +207,43 @@ function initInstantsWidget() {
     const isClick = Math.abs(currentDeltaX) < 6 && Math.abs(currentDeltaY) < 6;
 
     if (isClick) {
-      triggerClickFlyOut();
+      executeFlyOut(1);
     } else if (isSwipe) {
-      triggerSwipeOut(currentDeltaX < 0 ? -1 : 1);
+      executeFlyOut(currentDeltaX < 0 ? -1 : 1);
     } else {
       resetToCenter();
     }
   }
 
-  function triggerClickFlyOut() {
-    isAnimating = true;
-    cardTop.classList.add('is-animating');
-
-    // Fly current photo out to the right FIRST
-    cardTop.style.transform = 'translate3d(420px, 0, 0) rotate(25deg)';
-    cardTop.style.opacity = '0';
-
-    setTimeout(() => {
-      currentIndex = (currentIndex + 1) % INSTANTS_DATA.length;
-      renderPhoto(currentIndex);
-
-      // Instant reset back to center without bounce
-      cardTop.classList.remove('is-animating');
-      cardTop.style.transform = 'translate3d(0, 0, 0) rotate(0deg)';
-      cardTop.style.opacity = '1';
-      isAnimating = false;
-    }, 240);
-  }
-
-  function triggerSwipeOut(direction = 1) {
+  function executeFlyOut(direction = 1) {
     isAnimating = true;
     cardTop.classList.add('is-animating');
 
     const flyX = direction * 450;
-    const flyRot = direction * 30;
+    const flyRot = direction * 28;
 
-    cardTop.style.transform = `translate3d(${flyX}px, ${currentDeltaY * 1.2}px, 0) rotate(${flyRot}deg)`;
+    cardTop.style.transform = `translate3d(${flyX}px, ${currentDeltaY * 1.1}px, 0) rotate(${flyRot}deg)`;
     cardTop.style.opacity = '0';
 
     setTimeout(() => {
       currentIndex = (currentIndex + 1) % INSTANTS_DATA.length;
-      renderPhoto(currentIndex);
 
-      // Instant reset back to center without bounce
+      // Reset cardTop styles without animation transition
       cardTop.classList.remove('is-animating');
       cardTop.style.transform = 'translate3d(0, 0, 0) rotate(0deg)';
       cardTop.style.opacity = '1';
+
+      // Update all 3 cards in background seamlessly
+      renderAllCards();
       isAnimating = false;
-    }, 180);
+    }, 260);
   }
 
   function resetToCenter() {
     cardTop.classList.add('is-animating');
     cardTop.style.transform = 'translate3d(0, 0, 0) rotate(0deg)';
     cardTop.style.opacity = '1';
-    setTimeout(() => cardTop.classList.remove('is-animating'), 240);
+    setTimeout(() => cardTop.classList.remove('is-animating'), 260);
   }
 
   cardTop.addEventListener('pointerdown', onPointerDown);
@@ -260,7 +251,7 @@ function initInstantsWidget() {
   window.addEventListener('pointerup', onPointerUp);
   window.addEventListener('pointercancel', onPointerUp);
 
-  renderPhoto(0);
+  renderAllCards();
 }
 
 function initScheduleFlip() {

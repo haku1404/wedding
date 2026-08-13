@@ -208,7 +208,7 @@ main { max-width: var(--max-width); margin: 0 auto; overflow-x: hidden; }
 .timeline__title { font-family: var(--font-heading); font-size: 22px; margin: var(--space-1) 0; }
 .timeline__desc { font-size: 14px; color: var(--color-text-muted); }
 
-/* Instagram Instants / Locket Squircle Widget */
+/* Instagram Instants Stack Widget */
 .gallery { padding: var(--space-7) var(--space-4); text-align: center; }
 
 .instants-container {
@@ -226,37 +226,15 @@ main { max-width: var(--max-width); margin: 0 auto; overflow-x: hidden; }
   touch-action: none;
 }
 
-/* Decorative stacked cards behind main card */
-.instants-stack__card {
-  position: absolute;
-  inset: 0;
-  border-radius: 40px;
-  background: rgba(255, 255, 255, 0.28);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  pointer-events: none;
-}
-.instants-stack__card--2 {
-  transform: rotate(5deg) scale(0.96);
-  background: rgba(232, 201, 196, 0.4);
-}
-.instants-stack__card--3 {
-  transform: rotate(-6deg) scale(0.92);
-  background: rgba(201, 166, 120, 0.4);
-}
-
 .instants-card {
   position: absolute;
   inset: 0;
-  z-index: 3;
   border-radius: 40px;
   background: rgba(255, 255, 255, 0.38);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.6);
   box-shadow: 0 16px 40px rgba(74, 66, 56, 0.15);
-  cursor: grab;
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -266,13 +244,35 @@ main { max-width: var(--max-width); margin: 0 auto; overflow-x: hidden; }
   will-change: transform, opacity;
 }
 
+/* Stack Layers */
+.instants-card--top {
+  z-index: 3;
+  transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+  opacity: 1;
+  cursor: grab;
+}
+
+.instants-card--middle {
+  z-index: 2;
+  transform: translate3d(0, 8px, 0) rotate(5deg) scale(0.95);
+  opacity: 0.92;
+  pointer-events: none;
+}
+
+.instants-card--bottom {
+  z-index: 1;
+  transform: translate3d(0, 16px, 0) rotate(-6deg) scale(0.90);
+  opacity: 0.80;
+  pointer-events: none;
+}
+
 .instants-card.is-dragging {
   cursor: grabbing;
   transition: none !important;
 }
 
 .instants-card.is-animating {
-  transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.25s ease !important;
+  transition: transform 0.28s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.28s ease !important;
 }
 
 .instants-card__content {
