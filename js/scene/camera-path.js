@@ -39,15 +39,13 @@ export const SECTION_IDS = [
 function fillDistance(size, camera) {
   const halfFov = THREE.MathUtils.degToRad(camera.fov) / 2;
 
-  // The bounding box subject width capped to reasonable gate proportions
-  const subjectWidth = Math.min(size.x, size.y * 2.2);
+  const subjectWidth = Math.min(size.x, size.y * 2.4);
 
-  // Responsive framing aspect: on portrait mobile viewports (aspect < 1.0),
-  // adapt framingAspect to match screen aspect (min 0.65) so the camera pulls back
-  // appropriately and frames the complete 3D structure on mobile screens.
+  // Balanced portrait framing aspect: allows gate to remain large and intimate on mobile
+  // without being excessively zoomed out or cropped off screen.
   const isPortrait = camera.aspect < 1.0;
   const framingAspect = isPortrait
-    ? Math.max(camera.aspect, 0.65)
+    ? Math.max(camera.aspect, 0.88)
     : Math.max(camera.aspect, 1.4);
 
   const byHeight = size.y / 2 / Math.tan(halfFov);
@@ -65,17 +63,16 @@ function buildControlPoints(box, camera) {
   const at = (x, y, z) => new THREE.Vector3(center.x + x, center.y + y, center.z + z);
 
   const isPortrait = camera.aspect < 1.0;
-  // Reduce lateral X-axis offset on narrow mobile screens so the 3D gate stays framed
-  const xMult = isPortrait ? 0.45 : 1.0;
+  const xMult = isPortrait ? 0.6 : 1.0;
 
   const positions = [
-    at(0, h * (isPortrait ? 0.12 : 0.08), d * (isPortrait ? 1.05 : 0.80)),
-    at(-d * 0.24 * xMult, -h * 0.12, d * (isPortrait ? 0.70 : 0.52)),
+    at(0, h * (isPortrait ? 0.10 : 0.08), d * (isPortrait ? 0.92 : 0.80)),
+    at(-d * 0.24 * xMult, -h * 0.12, d * (isPortrait ? 0.58 : 0.52)),
     at(0, h * 0.02, d * 0.04),
     at(d * 0.28 * xMult, h * 0.06, -d * 0.48),
     at(-d * 0.56 * xMult, h * 0.28, -d * 0.52),
-    at(0, h * 0.02, d * (isPortrait ? 0.65 : 0.46)),
-    at(0, h * 0.62, d * (isPortrait ? 1.35 : 1.15))
+    at(0, h * 0.02, d * (isPortrait ? 0.52 : 0.46)),
+    at(0, h * 0.62, d * (isPortrait ? 1.22 : 1.15))
   ];
 
   const targets = [

@@ -59,13 +59,13 @@ main { max-width: var(--max-width); margin: 0 auto; overflow-x: hidden; }
   letter-spacing: 3px;
   text-transform: uppercase;
   color: var(--color-accent);
-  background: rgba(255, 255, 255, 0.82);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   padding: 6px 18px;
   border-radius: var(--radius-pill);
   box-shadow: var(--shadow-soft);
-  border: 1px solid rgba(201, 166, 120, 0.25);
+  border: 1px solid rgba(201, 166, 120, 0.3);
   margin-bottom: var(--space-2);
 }
 
@@ -152,12 +152,12 @@ main { max-width: var(--max-width); margin: 0 auto; overflow-x: hidden; }
   gap: var(--space-3);
   align-items: flex-start;
   text-align: left;
-  background: rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-soft);
-  border: 1px solid rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.6);
   padding: var(--space-4);
   margin-top: var(--space-4);
 }
@@ -185,13 +185,13 @@ main { max-width: var(--max-width); margin: 0 auto; overflow-x: hidden; }
 .timeline__item {
   position: relative;
   margin-bottom: var(--space-4);
-  background: rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   padding: var(--space-4);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-soft);
-  border: 1px solid rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.6);
 }
 .timeline__item::before {
   content: '';
@@ -257,10 +257,10 @@ main { max-width: var(--max-width); margin: 0 auto; overflow-x: hidden; }
   backface-visibility: hidden;
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-soft);
-  background: rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border: 1px solid rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
   padding: var(--space-4);
   display: flex;
   flex-direction: column;
@@ -280,22 +280,22 @@ main { max-width: var(--max-width); margin: 0 auto; overflow-x: hidden; }
   font-size: 26px;
   margin: var(--space-3) auto var(--space-5);
   display: inline-block;
-  background: rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   padding: var(--space-2) var(--space-5);
   border-radius: var(--radius-pill);
   box-shadow: var(--shadow-soft);
-  border: 1px solid rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.6);
 }
 .gift-card {
   margin-top: var(--space-7);
-  background: rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background: rgba(255, 255, 255, 0.55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-soft);
-  border: 1px solid rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.6);
   padding: var(--space-5);
   display: inline-block;
 }
