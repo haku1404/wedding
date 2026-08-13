@@ -141,8 +141,46 @@ main { max-width: var(--max-width); margin: 0 auto; overflow-x: hidden; }
 }
 .hero__date { font-size: 14px; }
 
+/* Hero Countdown Timer */
+.hero__countdown {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: var(--space-4);
+}
+
+.countdown-box {
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  box-shadow: 0 8px 24px rgba(74, 66, 56, 0.08);
+  padding: 8px 12px;
+  min-width: 64px;
+  text-align: center;
+}
+
+.countdown-val {
+  display: block;
+  font-family: var(--font-heading);
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--color-text);
+  line-height: 1.1;
+}
+
+.countdown-lbl {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--color-text-muted);
+}
+
 @media (min-width: 768px) {
   .hero__names { font-size: 64px; }
+  .countdown-box { min-width: 76px; padding: 10px 16px; }
+  .countdown-val { font-size: 28px; }
 }
 
 /* Event info */

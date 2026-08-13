@@ -11,6 +11,6 @@ const CONFIG = {
   // Admin PIN code for secret delete switch
   ADMIN_PIN: '1404',
 
-  // Background Piano Music URL (Piano A Thousand Years / Romantic Wedding Piano)
-  MUSIC_URL: 'https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=romantic-wedding-piano-112191.mp3'
+  // Background Piano Music URL (Local project music.mp3)
+  MUSIC_URL: 'assets/music/music.mp3'
 };

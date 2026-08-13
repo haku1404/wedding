@@ -346,13 +346,50 @@ function initRSVP() {
   });
 }
 
+function initCountdown() {
+  const daysEl = document.getElementById('cd-days');
+  const hoursEl = document.getElementById('cd-hours');
+  const minsEl = document.getElementById('cd-mins');
+  const secsEl = document.getElementById('cd-secs');
+
+  if (!daysEl || !hoursEl || !minsEl || !secsEl) return;
+
+  const targetDate = new Date('2026-10-22T00:00:00+07:00').getTime();
+
+  function update() {
+    const now = Date.now();
+    const diff = targetDate - now;
+
+    if (diff <= 0) {
+      daysEl.textContent = '00';
+      hoursEl.textContent = '00';
+      minsEl.textContent = '00';
+      secsEl.textContent = '00';
+      return;
+    }
+
+    const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const s = Math.floor((diff % (1000 * 60)) / 1000);
+
+    daysEl.textContent = String(d).padStart(2, '0');
+    hoursEl.textContent = String(h).padStart(2, '0');
+    minsEl.textContent = String(m).padStart(2, '0');
+    secsEl.textContent = String(s).padStart(2, '0');
+  }
+
+  update();
+  setInterval(update, 1000);
+}
+
 function initBackgroundMusic() {
   const musicBtn = document.getElementById('music-toggle');
   if (!musicBtn) return;
 
   const musicUrl = (typeof CONFIG !== 'undefined' && CONFIG.MUSIC_URL)
     ? CONFIG.MUSIC_URL
-    : 'https://cdn.pixabay.com/download/audio/2022/05/27/audio_1808fbf07a.mp3?filename=romantic-wedding-piano-112191.mp3';
+    : 'assets/music/music.mp3';
 
   const audio = new Audio(musicUrl);
   audio.loop = true;
@@ -363,12 +400,12 @@ function initBackgroundMusic() {
       isPlaying = true;
       musicBtn.classList.add('is-playing');
       musicBtn.querySelector('.music-toggle__disc').textContent = '🎵';
-      musicBtn.setAttribute('title', 'Tắt nhạc nền Piano A Thousand Years');
+      musicBtn.setAttribute('title', 'Tắt nhạc nền Piano');
     }).catch(() => {
       isPlaying = false;
       musicBtn.classList.remove('is-playing');
       musicBtn.querySelector('.music-toggle__disc').textContent = '🔇';
-      musicBtn.setAttribute('title', 'Bật nhạc nền Piano A Thousand Years');
+      musicBtn.setAttribute('title', 'Bật nhạc nền Piano');
     });
   }
 
@@ -377,7 +414,7 @@ function initBackgroundMusic() {
     isPlaying = false;
     musicBtn.classList.remove('is-playing');
     musicBtn.querySelector('.music-toggle__disc').textContent = '🔇';
-    musicBtn.setAttribute('title', 'Bật nhạc nền Piano A Thousand Years');
+    musicBtn.setAttribute('title', 'Bật nhạc nền Piano');
   }
 
   musicBtn.addEventListener('click', (e) => {
@@ -411,6 +448,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initTimelineDraw();
     initInstantsWidget();
     initScheduleFlip();
+    initCountdown();
     if (typeof initGuestbook === 'function') initGuestbook();
     initRSVP();
     initBackgroundMusic();
