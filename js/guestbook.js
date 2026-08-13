@@ -30,9 +30,10 @@ function initGuestbook() {
   let topWishIndex = 0;
   let bottomTickSeed = Date.now();
 
-  // Sync from Google Sheets cloud DB on load if configured
+  // Sync from Google Sheets cloud DB on load and every 15 seconds in background
   if (typeof CONFIG !== 'undefined' && CONFIG.GOOGLE_SHEET_SCRIPT_URL) {
     fetchCloudMessages();
+    setInterval(fetchCloudMessages, 15000);
   }
 
   async function fetchCloudMessages() {
@@ -40,9 +41,18 @@ function initGuestbook() {
       const res = await fetch(CONFIG.GOOGLE_SHEET_SCRIPT_URL);
       if (res.ok) {
         const cloudData = await res.json();
-        if (Array.isArray(cloudData)) {
+        if (Array.isArray(cloudData) && cloudData.length > 0) {
+          const isFirstFetch = messages.length === 0;
+          const hasNewWish = !isFirstFetch && cloudData[0] && messages[0] && cloudData[0].id !== messages[0].id;
+
           messages = cloudData;
           saveMessages(messages);
+
+          if (hasNewWish) {
+            newlySubmittedWish = cloudData[0];
+            newWishPinnedTime = Date.now();
+          }
+
           renderMessages();
         }
       }
