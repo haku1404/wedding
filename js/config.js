@@ -5,8 +5,8 @@ const CONFIG = {
   SUPABASE_URL: '',
   SUPABASE_ANON_KEY: '',
 
-  // Option 2: Google Sheets Web App URL (Active - Soft Delete Enabled)
-  GOOGLE_SHEET_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbzs9ANC82EJyOCiSTaYOYjH7y8628KNTrYEx98-Xv5dQZXHh2bBGmR6wOUyEmNKx_w6/exec',
+  // Option 2: Google Sheets Web App URL (Active - Full Row 1 & Soft Delete Enabled)
+  GOOGLE_SHEET_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbxJyXp_tCN4efwp8ktn7yKcYfDfwY8zE5EQ1shogAQOEhZtaTVZLuKTGS8UKQVaeZVM/exec',
 
   // Admin PIN code for secret delete switch
   ADMIN_PIN: '1404',
