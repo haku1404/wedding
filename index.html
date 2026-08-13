@@ -100,18 +100,20 @@
     <section id="gallery" class="gallery">
       <p class="section-label" data-reveal>Khoảnh khắc của chúng mình</p>
 
-      <!-- Instagram Instants / Locket Squircle Widget -->
+      <!-- Gesture-Driven Interactive Card Stack -->
       <div class="instants-container" data-reveal>
-        <div class="instants-stack">
-          <div class="instants-stack__card instants-stack__card--3"></div>
-          <div class="instants-stack__card instants-stack__card--2"></div>
-          <div class="instants-card" id="instants-card" role="button" tabindex="0" aria-label="Chạm để xem khoảnh khắc tiếp theo">
-            <span class="instants-card__counter" id="instants-counter">1 / 12</span>
-            <div class="instants-card__content" id="instants-content"></div>
-            <div class="instants-card__flash" id="instants-flash"></div>
+        <div class="instants-stack" id="instants-stack">
+          <div class="instants-card instants-card--bottom" id="card-bottom">
+            <div class="instants-card__content"></div>
+          </div>
+          <div class="instants-card instants-card--middle" id="card-middle">
+            <div class="instants-card__content"></div>
+          </div>
+          <div class="instants-card instants-card--top" id="card-top">
+            <div class="instants-card__content"></div>
           </div>
         </div>
-        <p class="instants-hint">Chạm vào ảnh để xem khoảnh khắc tiếp theo ⚡</p>
+        <p class="instants-hint">Vuốt hoặc chạm vào ảnh để chuyển thẻ ⚡</p>
       </div>
     </section>
     <section id="schedule" class="schedule">

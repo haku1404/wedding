@@ -127,45 +127,166 @@ const INSTANTS_DATA = [
 ];
 
 function initInstantsWidget() {
-  const card = document.getElementById('instants-card');
-  const content = document.getElementById('instants-content');
-  const counter = document.getElementById('instants-counter');
-  const flash = document.getElementById('instants-flash');
+  const stack = document.getElementById('instants-stack');
+  const cardTop = document.getElementById('card-top');
+  const cardMiddle = document.getElementById('card-middle');
+  const cardBottom = document.getElementById('card-bottom');
 
-  if (!card || !content) return;
+  if (!stack || !cardTop || !cardMiddle || !cardBottom) return;
 
   let currentIndex = 0;
+  let isDragging = false;
+  let isSwiping = false;
+  let startX = 0;
+  let startY = 0;
+  let currentDeltaX = 0;
+  let currentDeltaY = 0;
+  let startTime = 0;
 
-  function renderPhoto(index) {
-    const photo = INSTANTS_DATA[index];
-    counter.textContent = `${photo.id} / ${INSTANTS_DATA.length}`;
-
-    // Camera flash effect on tap
-    flash.classList.add('is-flashing');
-    setTimeout(() => flash.classList.remove('is-flashing'), 180);
-
-    content.style.background = photo.bg;
+  function renderCardContent(cardEl, dataIndex) {
+    const data = INSTANTS_DATA[(dataIndex + INSTANTS_DATA.length) % INSTANTS_DATA.length];
+    const content = cardEl.querySelector('.instants-card__content');
+    if (!content) return;
+    content.style.background = data.bg;
     content.innerHTML = `
-      <div class="instants-card__icon">${photo.icon}</div>
-      <h3 class="instants-card__title">${photo.title}</h3>
-      <div class="instants-card__date">${photo.date}</div>
+      <div class="instants-card__icon">${data.icon}</div>
+      <h3 class="instants-card__title">${data.title}</h3>
+      <div class="instants-card__date">${data.date}</div>
     `;
   }
 
-  function nextPhoto() {
-    currentIndex = (currentIndex + 1) % INSTANTS_DATA.length;
-    renderPhoto(currentIndex);
+  function updateStackDisplay() {
+    renderCardContent(cardTop, currentIndex);
+    renderCardContent(cardMiddle, currentIndex + 1);
+    renderCardContent(cardBottom, currentIndex + 2);
+
+    // Reset styles
+    cardTop.className = 'instants-card instants-card--top';
+    cardMiddle.className = 'instants-card instants-card--middle';
+    cardBottom.className = 'instants-card instants-card--bottom';
+
+    cardTop.style.transform = '';
+    cardTop.style.opacity = '';
+    cardMiddle.style.transform = '';
+    cardMiddle.style.opacity = '';
+    cardBottom.style.transform = '';
+    cardBottom.style.opacity = '';
   }
 
-  renderPhoto(0);
+  function onPointerDown(e) {
+    if (isSwiping) return;
+    isDragging = true;
+    startX = e.clientX || (e.touches && e.touches[0].clientX) || 0;
+    startY = e.clientY || (e.touches && e.touches[0].clientY) || 0;
+    currentDeltaX = 0;
+    currentDeltaY = 0;
+    startTime = Date.now();
 
-  card.addEventListener('click', nextPhoto);
-  card.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      nextPhoto();
+    cardTop.classList.add('is-dragging');
+    if (e.pointerId !== undefined && cardTop.setPointerCapture) {
+      try { cardTop.setPointerCapture(e.pointerId); } catch {}
     }
-  });
+  }
+
+  function onPointerMove(e) {
+    if (!isDragging) return;
+
+    const x = e.clientX || (e.touches && e.touches[0].clientX) || 0;
+    const y = e.clientY || (e.touches && e.touches[0].clientY) || 0;
+
+    currentDeltaX = x - startX;
+    currentDeltaY = y - startY;
+
+    const rotateDeg = (currentDeltaX / 300) * 22;
+    const opacity = Math.max(0, 1 - Math.abs(currentDeltaX) / 450);
+
+    cardTop.style.transform = `translate3d(${currentDeltaX}px, ${currentDeltaY}px, 0) rotate(${rotateDeg}deg)`;
+    cardTop.style.opacity = opacity;
+
+    // Gesture physics interpolation for back cards
+    const progress = Math.min(Math.abs(currentDeltaX) / 180, 1);
+
+    // Middle card moves to top position
+    const midY = 8 - progress * 8;
+    const midRot = 4 - progress * 4;
+    const midScale = 0.95 + progress * 0.05;
+    const midOpacity = 0.85 + progress * 0.15;
+    cardMiddle.style.transform = `translate3d(0, ${midY}px, 0) rotate(${midRot}deg) scale(${midScale})`;
+    cardMiddle.style.opacity = midOpacity;
+
+    // Bottom card moves to middle position
+    const botY = 16 - progress * 8;
+    const botRot = -4 + progress * 8;
+    const botScale = 0.90 + progress * 0.05;
+    const botOpacity = 0.70 + progress * 0.15;
+    cardBottom.style.transform = `translate3d(0, ${botY}px, 0) rotate(${botRot}deg) scale(${botScale})`;
+    cardBottom.style.opacity = botOpacity;
+  }
+
+  function onPointerUp(e) {
+    if (!isDragging) return;
+    isDragging = false;
+    cardTop.classList.remove('is-dragging');
+
+    if (e.pointerId !== undefined && cardTop.releasePointerCapture) {
+      try { cardTop.releasePointerCapture(e.pointerId); } catch {}
+    }
+
+    const duration = Date.now() - startTime;
+    const velocityX = Math.abs(currentDeltaX) / Math.max(1, duration);
+
+    const isSwipe = Math.abs(currentDeltaX) > 80 || (velocityX > 0.35 && Math.abs(currentDeltaX) > 15);
+    const isClick = Math.abs(currentDeltaX) < 8 && Math.abs(currentDeltaY) < 8;
+
+    if (isSwipe || isClick) {
+      executeSwipeOut(currentDeltaX < 0 ? -1 : 1);
+    } else {
+      resetStack();
+    }
+  }
+
+  function executeSwipeOut(direction = 1) {
+    isSwiping = true;
+    cardTop.classList.add('is-swiping');
+
+    const flyX = direction * 420;
+    const flyRot = direction * 35;
+
+    cardTop.style.transform = `translate3d(${flyX}px, ${currentDeltaY * 1.5}px, 0) rotate(${flyRot}deg)`;
+    cardTop.style.opacity = '0';
+
+    // Animate middle card to front
+    cardMiddle.style.transition = 'transform 0.35s ease, opacity 0.35s ease';
+    cardMiddle.style.transform = 'translate3d(0, 0, 0) rotate(0deg) scale(1)';
+    cardMiddle.style.opacity = '1';
+
+    // Animate bottom card to middle
+    cardBottom.style.transition = 'transform 0.35s ease, opacity 0.35s ease';
+    cardBottom.style.transform = 'translate3d(0, 8px, 0) rotate(4deg) scale(0.95)';
+    cardBottom.style.opacity = '0.85';
+
+    setTimeout(() => {
+      currentIndex = (currentIndex + 1) % INSTANTS_DATA.length;
+      updateStackDisplay();
+      isSwiping = false;
+    }, 360);
+  }
+
+  function resetStack() {
+    cardTop.style.transform = 'translate3d(0, 0, 0) rotate(0deg) scale(1)';
+    cardTop.style.opacity = '1';
+    cardMiddle.style.transform = 'translate3d(0, 8px, 0) rotate(4deg) scale(0.95)';
+    cardMiddle.style.opacity = '0.85';
+    cardBottom.style.transform = 'translate3d(0, 16px, 0) rotate(-4deg) scale(0.90)';
+    cardBottom.style.opacity = '0.70';
+  }
+
+  cardTop.addEventListener('pointerdown', onPointerDown);
+  window.addEventListener('pointermove', onPointerMove);
+  window.addEventListener('pointerup', onPointerUp);
+  window.addEventListener('pointercancel', onPointerUp);
+
+  updateStackDisplay();
 }
 
 function initScheduleFlip() {
