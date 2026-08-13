@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Khánh Vy &amp; Đức Anh - Thiệp cưới</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Be+Vietnam+Pro:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <noscript><style>.preloader{display:none!important}[data-reveal]{opacity:1!important;transform:none!important}</style></noscript>
+  <script>
+    // Watchdog: if the normal JS/CDN init path never signals "ready" within
+    // 3s (script blocked, CDN unreachable, SRI mismatch, runtime error),
+    // reveal the page anyway so it is never permanently blank.
+    setTimeout(function () {
+      if (document.documentElement.dataset.ready === '1') return;
+      var preloader = document.getElementById('preloader');
+      if (preloader) preloader.style.display = 'none';
+      var revealed = document.querySelectorAll('[data-reveal]');
+      for (var i = 0; i < revealed.length; i++) {
+        revealed[i].style.opacity = '1';
+        revealed[i].style.transform = 'none';
+      }
+    }, 3000);
+  </script>
+  <!-- Three.js is vendored locally, so an import map replaces the CDN. Module
+       scripts cannot carry an `integrity` attribute; serving our own copies
+       keeps the same guarantee the SRI-pinned CDN scripts below provide. -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "./js/vendor/three/three.module.min.js",
+      "three/addons/": "./js/vendor/three/addons/"
+    }
+  }
+  </script>
+</head>
+<body>
+  <canvas id="scene" class="scene-canvas" aria-hidden="true"></canvas>
+
+  <div id="preloader" class="preloader" aria-hidden="true">
+    <div class="preloader__mark">K <span class="amp">&amp;</span> Đ</div>
+  </div>
+
+  <main id="main-content">
+    <section id="hero" class="hero">
+      <div class="hero__bg" style="background-color:#E8C9C4;"></div>
+      <div class="hero__content">
+        <p class="section-label" data-reveal>Save the date</p>
+        <h1 class="hero__names" data-reveal>Khánh Vy <span class="amp">&amp;</span> Đức Anh</h1>
+        <div class="hero__divider" data-reveal></div>
+        <p class="hero__tagline" data-reveal>Chúng mình sắp cưới rồi, mời bạn đến chung vui!</p>
+        <p class="hero__date" data-reveal>14 . 02 . 2027 — Thứ Hai</p>
+      </div>
+    </section>
+    <section id="event-info" class="event-info">
+      <p class="section-label" data-reveal>Thông tin sự kiện</p>
+      <div class="event-card" data-reveal>
+        <div class="event-card__icon">01</div>
+        <div>
+          <h3 class="event-card__title">Lễ Vu Quy</h3>
+          <p class="event-card__meta">09:00 — Thứ Hai, 14.02.2027</p>
+          <p class="event-card__meta">Tư gia nhà gái</p>
+          <a class="btn btn-outline" href="https://maps.google.com" target="_blank" rel="noopener">Xem chỉ đường</a>
+        </div>
+      </div>
+      <div class="event-card" data-reveal>
+        <div class="event-card__icon">02</div>
+        <div>
+          <h3 class="event-card__title">Tiệc Cưới</h3>
+          <p class="event-card__meta">18:00 — Thứ Hai, 14.02.2027</p>
+          <p class="event-card__meta">Trung tâm tiệc cưới ABC</p>
+          <a class="btn btn-outline" href="https://maps.google.com" target="_blank" rel="noopener">Xem chỉ đường</a>
+        </div>
+      </div>
+    </section>
+    <section id="love-story" class="love-story">
+      <p class="section-label" data-reveal>Câu chuyện của chúng mình</p>
+      <div class="timeline">
+        <svg class="timeline__line" viewBox="0 0 2 100" preserveAspectRatio="none">
+          <line x1="1" y1="0" x2="1" y2="100" vector-effect="non-scaling-stroke" />
+        </svg>
+        <div class="timeline__item" data-reveal>
+          <span class="timeline__date">2019</span>
+          <h3 class="timeline__title">Lần đầu gặp gỡ</h3>
+          <p class="timeline__desc">Chúng mình quen nhau qua một người bạn chung.</p>
+        </div>
+        <div class="timeline__item" data-reveal>
+          <span class="timeline__date">2021</span>
+          <h3 class="timeline__title">Chính thức yêu nhau</h3>
+          <p class="timeline__desc">Sau nhiều lần hẹn hò, chúng mình quyết định về chung một hướng.</p>
+        </div>
+        <div class="timeline__item" data-reveal>
+          <span class="timeline__date">2026</span>
+          <h3 class="timeline__title">Lời cầu hôn</h3>
+          <p class="timeline__desc">Một buổi tối đáng nhớ, câu trả lời là "Có!".</p>
+        </div>
+      </div>
+    </section>
+    <section id="gallery" class="gallery">
+      <p class="section-label" data-reveal>Khoảnh khắc của chúng mình</p>
+      <div class="gallery__grid">
+        <button class="gallery__item" data-reveal style="background-color:#E8C9C4" data-full="Ảnh 1 (placeholder)" aria-label="Xem ảnh 1"></button>
+        <button class="gallery__item" data-reveal style="background-color:#C9A678" data-full="Ảnh 2 (placeholder)" aria-label="Xem ảnh 2"></button>
+        <button class="gallery__item" data-reveal style="background-color:#FAF6F0" data-full="Ảnh 3 (placeholder)" aria-label="Xem ảnh 3"></button>
+        <button class="gallery__item" data-reveal style="background-color:#B48A6A" data-full="Ảnh 4 (placeholder)" aria-label="Xem ảnh 4"></button>
+        <button class="gallery__item" data-reveal style="background-color:#8A7F70" data-full="Ảnh 5 (placeholder)" aria-label="Xem ảnh 5"></button>
+        <button class="gallery__item" data-reveal style="background-color:#4A4238" data-full="Ảnh 6 (placeholder)" aria-label="Xem ảnh 6"></button>
+      </div>
+    </section>
+    <section id="schedule" class="schedule">
+      <p class="section-label" data-reveal>Lịch trình sự kiện</p>
+      <div class="flip-card" data-reveal tabindex="0" role="button" aria-label="Chạm để xem chi tiết lễ Vu Quy">
+        <div class="flip-card__inner">
+          <div class="flip-card__front">
+            <h3>Lễ Vu Quy</h3>
+            <p>09:00 — Chạm để xem chi tiết</p>
+          </div>
+          <div class="flip-card__back">
+            <ul>
+              <li>08:30 — Đón khách</li>
+              <li>09:00 — Làm lễ gia tiên</li>
+              <li>10:00 — Rước dâu</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="flip-card" data-reveal tabindex="0" role="button" aria-label="Chạm để xem chi tiết tiệc cưới">
+        <div class="flip-card__inner">
+          <div class="flip-card__front">
+            <h3>Tiệc Cưới</h3>
+            <p>18:00 — Chạm để xem chi tiết</p>
+          </div>
+          <div class="flip-card__back">
+            <ul>
+              <li>17:30 — Đón khách</li>
+              <li>18:00 — Khai tiệc</li>
+              <li>20:00 — Chụp ảnh lưu niệm</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section id="rsvp" class="rsvp">
+      <p class="section-label" data-reveal>Xác nhận tham dự</p>
+      <h2 class="rsvp__heading" data-reveal>Rất mong được đón tiếp bạn!</h2>
+      <button id="rsvp-btn" class="btn btn-primary" data-reveal>Xác nhận tham dự</button>
+
+      <div class="gift-card" data-reveal>
+        <p class="gift-card__label">Gửi lời chúc / Mừng cưới</p>
+        <div class="gift-card__qr" role="img" aria-label="Mã QR chuyển khoản mừng cưới (sẽ cập nhật ảnh thật)"></div>
+      </div>
+    </section>
+    <footer id="site-footer" class="site-footer">
+      <div class="site-footer__names">Khánh Vy <span class="amp">&amp;</span> Đức Anh</div>
+      <p class="site-footer__thanks">Cảm ơn bạn đã dành thời gian ghé thăm trang này. Hẹn gặp bạn trong ngày trọng đại của chúng mình!</p>
+    </footer>
+  </main>
+
+  <div id="lightbox" class="lightbox" hidden>
+    <button class="lightbox__close" aria-label="Đóng">&times;</button>
+    <div class="lightbox__content"></div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha512-7eHRwcbYkK4d9g/6tD/mhkf++eoTHwpNM9woBxtPUBWm67zeAfFC+HrdoE2GanKeocly/VxeLvIqwvCdk7qScg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" integrity="sha512-onMTRKJBKz8M1TnqqDuGBlowlH0ohFzMXYRNebz+yOcc5TQr/zAKsthzhuv0hiyUKEiQEQXEynnXCvNTOk50dg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js" integrity="sha384-sPwMflxqfAN+Q5mvlkLmHiX3PORGbZSXHiSGPTXT9VHCD/AB+b+r+vJWsqprv+7k" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="js/main.js" defer></script>
+  <!-- Separate module graph from main.js on purpose: if the 3D layer throws,
+       the preloader, timeline, lightbox and RSVP keep working. -->
+  <script type="module" src="js/scene3d.js"></script>
+</body>
+</html>
