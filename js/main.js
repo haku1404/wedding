@@ -197,30 +197,12 @@ function initInstantsWidget() {
     currentDeltaX = x - startX;
     currentDeltaY = y - startY;
 
-    const rotateDeg = (currentDeltaX / 300) * 22;
+    const rotateDeg = (currentDeltaX / 300) * 18;
     const opacity = Math.max(0, 1 - Math.abs(currentDeltaX) / 450);
 
+    // Only animate the top card being dragged/swiped
     cardTop.style.transform = `translate3d(${currentDeltaX}px, ${currentDeltaY}px, 0) rotate(${rotateDeg}deg)`;
     cardTop.style.opacity = opacity;
-
-    // Gesture physics interpolation for back cards
-    const progress = Math.min(Math.abs(currentDeltaX) / 180, 1);
-
-    // Middle card moves to top position
-    const midY = 8 - progress * 8;
-    const midRot = 4 - progress * 4;
-    const midScale = 0.95 + progress * 0.05;
-    const midOpacity = 0.85 + progress * 0.15;
-    cardMiddle.style.transform = `translate3d(0, ${midY}px, 0) rotate(${midRot}deg) scale(${midScale})`;
-    cardMiddle.style.opacity = midOpacity;
-
-    // Bottom card moves to middle position
-    const botY = 16 - progress * 8;
-    const botRot = -4 + progress * 8;
-    const botScale = 0.90 + progress * 0.05;
-    const botOpacity = 0.70 + progress * 0.15;
-    cardBottom.style.transform = `translate3d(0, ${botY}px, 0) rotate(${botRot}deg) scale(${botScale})`;
-    cardBottom.style.opacity = botOpacity;
   }
 
   function onPointerUp(e) {
@@ -249,36 +231,23 @@ function initInstantsWidget() {
     isSwiping = true;
     cardTop.classList.add('is-swiping');
 
-    const flyX = direction * 420;
-    const flyRot = direction * 35;
+    const flyX = direction * 450;
+    const flyRot = direction * 30;
 
-    cardTop.style.transform = `translate3d(${flyX}px, ${currentDeltaY * 1.5}px, 0) rotate(${flyRot}deg)`;
+    // Top card flies out smoothly off screen
+    cardTop.style.transform = `translate3d(${flyX}px, ${currentDeltaY * 1.2}px, 0) rotate(${flyRot}deg)`;
     cardTop.style.opacity = '0';
-
-    // Animate middle card to front
-    cardMiddle.style.transition = 'transform 0.35s ease, opacity 0.35s ease';
-    cardMiddle.style.transform = 'translate3d(0, 0, 0) rotate(0deg) scale(1)';
-    cardMiddle.style.opacity = '1';
-
-    // Animate bottom card to middle
-    cardBottom.style.transition = 'transform 0.35s ease, opacity 0.35s ease';
-    cardBottom.style.transform = 'translate3d(0, 8px, 0) rotate(4deg) scale(0.95)';
-    cardBottom.style.opacity = '0.85';
 
     setTimeout(() => {
       currentIndex = (currentIndex + 1) % INSTANTS_DATA.length;
       updateStackDisplay();
       isSwiping = false;
-    }, 360);
+    }, 320);
   }
 
   function resetStack() {
     cardTop.style.transform = 'translate3d(0, 0, 0) rotate(0deg) scale(1)';
     cardTop.style.opacity = '1';
-    cardMiddle.style.transform = 'translate3d(0, 8px, 0) rotate(4deg) scale(0.95)';
-    cardMiddle.style.opacity = '0.85';
-    cardBottom.style.transform = 'translate3d(0, 16px, 0) rotate(-4deg) scale(0.90)';
-    cardBottom.style.opacity = '0.70';
   }
 
   cardTop.addEventListener('pointerdown', onPointerDown);
