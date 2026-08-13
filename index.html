@@ -99,13 +99,14 @@
     </section>
     <section id="gallery" class="gallery">
       <p class="section-label" data-reveal>Khoảnh khắc của chúng mình</p>
-      <div class="gallery__grid">
-        <button class="gallery__item" data-reveal style="background-color:#E8C9C4" data-full="Ảnh 1 (placeholder)" aria-label="Xem ảnh 1"></button>
-        <button class="gallery__item" data-reveal style="background-color:#C9A678" data-full="Ảnh 2 (placeholder)" aria-label="Xem ảnh 2"></button>
-        <button class="gallery__item" data-reveal style="background-color:#FAF6F0" data-full="Ảnh 3 (placeholder)" aria-label="Xem ảnh 3"></button>
-        <button class="gallery__item" data-reveal style="background-color:#B48A6A" data-full="Ảnh 4 (placeholder)" aria-label="Xem ảnh 4"></button>
-        <button class="gallery__item" data-reveal style="background-color:#8A7F70" data-full="Ảnh 5 (placeholder)" aria-label="Xem ảnh 5"></button>
-        <button class="gallery__item" data-reveal style="background-color:#4A4238" data-full="Ảnh 6 (placeholder)" aria-label="Xem ảnh 6"></button>
+      <div class="story-trigger" data-reveal id="story-trigger" role="button" tabindex="0" aria-label="Xem Stories Khoảnh khắc">
+        <div class="story-ring">
+          <div class="story-ring__avatar">K&amp;Đ</div>
+        </div>
+        <div class="story-trigger__info">
+          <h3 class="story-trigger__title">Xem Kỷ Niệm (12 khoảnh khắc)</h3>
+          <p class="story-trigger__subtitle">Chạm để mở Instants / Stories ➔</p>
+        </div>
       </div>
     </section>
     <section id="schedule" class="schedule">
@@ -157,9 +158,36 @@
     </footer>
   </main>
 
-  <div id="lightbox" class="lightbox" hidden>
-    <button class="lightbox__close" aria-label="Đóng">&times;</button>
-    <div class="lightbox__content"></div>
+  <!-- Instagram Stories Modal -->
+  <div id="story-modal" class="story-modal" hidden>
+    <div class="story-modal__backdrop" id="story-backdrop"></div>
+    <div class="story-modal__box">
+      <!-- 12 Progress Segmented Bars -->
+      <div class="story-bars" id="story-bars"></div>
+      
+      <!-- Story Header -->
+      <div class="story-header">
+        <div class="story-header__user">
+          <div class="story-header__avatar">K&amp;Đ</div>
+          <div class="story-header__info">
+            <span class="story-header__name">Khánh Vy &amp; Đức Anh</span>
+            <span class="story-header__time" id="story-time">Khoảnh khắc #1</span>
+          </div>
+        </div>
+        <button class="story-modal__close" id="story-close" aria-label="Đóng">&times;</button>
+      </div>
+
+      <!-- Main Slide Display Area -->
+      <div class="story-body" id="story-body">
+        <div class="story-slide" id="story-slide"></div>
+        <!-- Touch / Click Tap Navigation Zones -->
+        <button class="story-tap story-tap--left" id="story-tap-prev" aria-label="Ảnh trước"></button>
+        <button class="story-tap story-tap--right" id="story-tap-next" aria-label="Ảnh tiếp theo"></button>
+      </div>
+
+      <!-- Caption Footer -->
+      <div class="story-caption" id="story-caption"></div>
+    </div>
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha512-7eHRwcbYkK4d9g/6tD/mhkf++eoTHwpNM9woBxtPUBWm67zeAfFC+HrdoE2GanKeocly/VxeLvIqwvCdk7qScg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
