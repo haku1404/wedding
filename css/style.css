@@ -208,7 +208,7 @@ main { max-width: var(--max-width); margin: 0 auto; overflow-x: hidden; }
 .timeline__title { font-family: var(--font-heading); font-size: 22px; margin: var(--space-1) 0; }
 .timeline__desc { font-size: 14px; color: var(--color-text-muted); }
 
-/* Interactive Gesture-Driven Card Stack Animation */
+/* Instagram Instants / Locket Squircle Widget */
 .gallery { padding: var(--space-7) var(--space-4); text-align: center; }
 
 .instants-container {
@@ -226,9 +226,30 @@ main { max-width: var(--max-width); margin: 0 auto; overflow-x: hidden; }
   touch-action: none;
 }
 
+/* Decorative stacked cards behind main card */
+.instants-stack__card {
+  position: absolute;
+  inset: 0;
+  border-radius: 40px;
+  background: rgba(255, 255, 255, 0.28);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  pointer-events: none;
+}
+.instants-stack__card--2 {
+  transform: rotate(5deg) scale(0.96);
+  background: rgba(232, 201, 196, 0.4);
+}
+.instants-stack__card--3 {
+  transform: rotate(-6deg) scale(0.92);
+  background: rgba(201, 166, 120, 0.4);
+}
+
 .instants-card {
   position: absolute;
   inset: 0;
+  z-index: 3;
   border-radius: 40px;
   background: rgba(255, 255, 255, 0.38);
   backdrop-filter: blur(10px);
@@ -242,9 +263,7 @@ main { max-width: var(--max-width); margin: 0 auto; overflow-x: hidden; }
   justify-content: center;
   user-select: none;
   touch-action: none;
-  transform-origin: center 120%;
   will-change: transform, opacity;
-  transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.35s ease;
 }
 
 .instants-card.is-dragging {
@@ -252,27 +271,8 @@ main { max-width: var(--max-width); margin: 0 auto; overflow-x: hidden; }
   transition: none !important;
 }
 
-.instants-card.is-swiping {
-  transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.4s ease !important;
-}
-
-/* Base stack positions */
-.instants-card--top {
-  z-index: 3;
-  transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
-  opacity: 1;
-}
-
-.instants-card--middle {
-  z-index: 2;
-  transform: translate3d(0, 8px, 0) rotate(4deg) scale(0.95);
-  opacity: 0.85;
-}
-
-.instants-card--bottom {
-  z-index: 1;
-  transform: translate3d(0, 16px, 0) rotate(-4deg) scale(0.90);
-  opacity: 0.70;
+.instants-card.is-animating {
+  transition: transform 0.25s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.25s ease !important;
 }
 
 .instants-card__content {
