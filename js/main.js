@@ -127,27 +127,26 @@ const INSTANTS_DATA = [
 ];
 
 function initInstantsWidget() {
-  const cardTop = document.getElementById('card-top');
-  const cardMiddle = document.getElementById('card-middle');
-  const cardBottom = document.getElementById('card-bottom');
+  const stackContainer = document.getElementById('instants-stack');
+  if (!stackContainer) return;
 
-  if (!cardTop || !cardMiddle || !cardBottom) return;
+  const cards = Array.from(stackContainer.querySelectorAll('.instants-card'));
+  if (cards.length < 3) return;
 
   let currentIndex = 0;
-  let isDragging = false;
   let isAnimating = false;
+  let isDragging = false;
   let startX = 0;
   let startY = 0;
   let currentDeltaX = 0;
   let currentDeltaY = 0;
   let startTime = 0;
 
-  function getPhotoData(dataIndex) {
-    return INSTANTS_DATA[(dataIndex % INSTANTS_DATA.length + INSTANTS_DATA.length) % INSTANTS_DATA.length];
+  function getPhotoData(idx) {
+    return INSTANTS_DATA[(idx % INSTANTS_DATA.length + INSTANTS_DATA.length) % INSTANTS_DATA.length];
   }
 
-  function renderCard(cardEl, dataIndex, layer) {
-    const data = getPhotoData(dataIndex);
+  function renderCardContent(cardEl, data) {
     const content = cardEl.querySelector('.instants-card__content');
     if (!content) return;
     content.style.background = data.bg;
@@ -156,25 +155,61 @@ function initInstantsWidget() {
       <h3 class="instants-card__title">${data.title}</h3>
       <div class="instants-card__date">${data.date}</div>
     `;
-
-    if (layer === 'middle') {
-      cardEl.style.transform = `translate3d(0, 8px, 0) rotate(${data.tilt}deg) scale(0.95)`;
-    } else if (layer === 'bottom') {
-      cardEl.style.transform = `translate3d(0, 16px, 0) rotate(${data.tilt}deg) scale(0.90)`;
-    } else if (layer === 'top' && !isDragging && !isAnimating) {
-      cardEl.style.transform = `translate3d(0, 0, 0) rotate(${data.tilt}deg) scale(1)`;
-      cardEl.style.opacity = '1';
-    }
   }
 
-  function renderAllCards() {
-    renderCard(cardTop, currentIndex, 'top');
-    renderCard(cardMiddle, currentIndex + 1, 'middle');
-    renderCard(cardBottom, currentIndex + 2, 'bottom');
+  function setupStackState() {
+    const topCard = cards[0];
+    const midCard = cards[1];
+    const botCard = cards[2];
+
+    const dataTop = getPhotoData(currentIndex);
+    const dataMid = getPhotoData(currentIndex + 1);
+    const dataBot = getPhotoData(currentIndex + 2);
+
+    renderCardContent(topCard, dataTop);
+    renderCardContent(midCard, dataMid);
+    renderCardContent(botCard, dataBot);
+
+    // Disable CSS transition during structural setup
+    topCard.classList.add('no-transition');
+    midCard.classList.add('no-transition');
+    botCard.classList.add('no-transition');
+
+    topCard.className = 'instants-card is-top';
+    topCard.style.transform = `translate3d(0, 0, 0) rotate(${dataTop.tilt}deg) scale(1)`;
+    topCard.style.opacity = '1';
+
+    midCard.className = 'instants-card is-middle';
+    midCard.style.transform = `translate3d(0, 8px, 0) rotate(${dataMid.tilt}deg) scale(0.95)`;
+    midCard.style.opacity = '0.92';
+
+    botCard.className = 'instants-card is-bottom';
+    botCard.style.transform = `translate3d(0, 16px, 0) rotate(${dataBot.tilt}deg) scale(0.90)`;
+    botCard.style.opacity = '0.80';
+
+    // Re-enable CSS transitions on next frame
+    requestAnimationFrame(() => {
+      topCard.classList.remove('no-transition');
+      midCard.classList.remove('no-transition');
+      botCard.classList.remove('no-transition');
+    });
+
+    bindTopCardEvents(topCard);
+  }
+
+  let activeTopCard = null;
+
+  function bindTopCardEvents(cardEl) {
+    if (activeTopCard === cardEl) return;
+    if (activeTopCard) {
+      activeTopCard.removeEventListener('pointerdown', onPointerDown);
+    }
+    activeTopCard = cardEl;
+    activeTopCard.addEventListener('pointerdown', onPointerDown);
   }
 
   function onPointerDown(e) {
-    if (isAnimating) return;
+    if (isAnimating || !activeTopCard) return;
     isDragging = true;
     startX = e.clientX || (e.touches && e.touches[0].clientX) || 0;
     startY = e.clientY || (e.touches && e.touches[0].clientY) || 0;
@@ -182,14 +217,18 @@ function initInstantsWidget() {
     currentDeltaY = 0;
     startTime = Date.now();
 
-    cardTop.classList.add('is-dragging');
-    if (e.pointerId !== undefined && cardTop.setPointerCapture) {
-      try { cardTop.setPointerCapture(e.pointerId); } catch {}
+    activeTopCard.classList.add('is-dragging');
+    if (e.pointerId !== undefined && activeTopCard.setPointerCapture) {
+      try { activeTopCard.setPointerCapture(e.pointerId); } catch {}
     }
+
+    window.addEventListener('pointermove', onPointerMove);
+    window.addEventListener('pointerup', onPointerUp);
+    window.addEventListener('pointercancel', onPointerUp);
   }
 
   function onPointerMove(e) {
-    if (!isDragging) return;
+    if (!isDragging || !activeTopCard) return;
 
     const x = e.clientX || (e.touches && e.touches[0].clientX) || 0;
     const y = e.clientY || (e.touches && e.touches[0].clientY) || 0;
@@ -202,23 +241,27 @@ function initInstantsWidget() {
     const dragRotate = (currentDeltaX / 300) * 18;
     const opacity = Math.max(0, 1 - Math.abs(currentDeltaX) / 450);
 
-    cardTop.style.transform = `translate3d(${currentDeltaX}px, ${currentDeltaY}px, 0) rotate(${baseTilt + dragRotate}deg)`;
-    cardTop.style.opacity = opacity;
+    activeTopCard.style.transform = `translate3d(${currentDeltaX}px, ${currentDeltaY}px, 0) rotate(${baseTilt + dragRotate}deg)`;
+    activeTopCard.style.opacity = opacity;
   }
 
   function onPointerUp(e) {
-    if (!isDragging) return;
+    if (!isDragging || !activeTopCard) return;
     isDragging = false;
-    cardTop.classList.remove('is-dragging');
+    activeTopCard.classList.remove('is-dragging');
 
-    if (e.pointerId !== undefined && cardTop.releasePointerCapture) {
-      try { cardTop.releasePointerCapture(e.pointerId); } catch {}
+    if (e.pointerId !== undefined && activeTopCard.releasePointerCapture) {
+      try { activeTopCard.releasePointerCapture(e.pointerId); } catch {}
     }
+
+    window.removeEventListener('pointermove', onPointerMove);
+    window.removeEventListener('pointerup', onPointerUp);
+    window.removeEventListener('pointercancel', onPointerUp);
 
     const duration = Date.now() - startTime;
     const velocityX = Math.abs(currentDeltaX) / Math.max(1, duration);
 
-    const isSwipe = Math.abs(currentDeltaX) > 60 || (velocityX > 0.3 && Math.abs(currentDeltaX) > 15);
+    const isSwipe = Math.abs(currentDeltaX) > 50 || (velocityX > 0.25 && Math.abs(currentDeltaX) > 12);
     const isClick = Math.abs(currentDeltaX) < 6 && Math.abs(currentDeltaY) < 6;
 
     if (isClick) {
@@ -231,44 +274,42 @@ function initInstantsWidget() {
   }
 
   function executeFlyOut(direction = 1) {
+    if (!activeTopCard) return;
     isAnimating = true;
-    cardTop.classList.add('is-animating');
 
     const currentData = getPhotoData(currentIndex);
     const baseTilt = currentData.tilt || 0;
     const flyX = direction * 450;
-    const flyRot = baseTilt + direction * 28;
+    const flyRot = baseTilt + direction * 26;
 
-    cardTop.style.transform = `translate3d(${flyX}px, ${currentDeltaY * 1.1}px, 0) rotate(${flyRot}deg)`;
-    cardTop.style.opacity = '0';
+    activeTopCard.style.transform = `translate3d(${flyX}px, ${currentDeltaY * 1.1}px, 0) rotate(${flyRot}deg)`;
+    activeTopCard.style.opacity = '0';
 
     setTimeout(() => {
       currentIndex = (currentIndex + 1) % INSTANTS_DATA.length;
 
-      // Reset cardTop styles without animation transition
-      cardTop.classList.remove('is-animating');
+      // Move flown card to back of DOM array and DOM tree
+      const flownCard = cards.shift();
+      cards.push(flownCard);
+      stackContainer.appendChild(flownCard);
 
-      // Update all 3 cards in background seamlessly keeping natural organic tilts
-      renderAllCards();
+      // Re-setup DOM stack order and positions seamlessly
+      setupStackState();
+
       isAnimating = false;
-    }, 260);
+    }, 280);
   }
 
   function resetToCenter() {
+    if (!activeTopCard) return;
     const currentData = getPhotoData(currentIndex);
     const baseTilt = currentData.tilt || 0;
-    cardTop.classList.add('is-animating');
-    cardTop.style.transform = `translate3d(0, 0, 0) rotate(${baseTilt}deg)`;
-    cardTop.style.opacity = '1';
-    setTimeout(() => cardTop.classList.remove('is-animating'), 260);
+
+    activeTopCard.style.transform = `translate3d(0, 0, 0) rotate(${baseTilt}deg)`;
+    activeTopCard.style.opacity = '1';
   }
 
-  cardTop.addEventListener('pointerdown', onPointerDown);
-  window.addEventListener('pointermove', onPointerMove);
-  window.addEventListener('pointerup', onPointerUp);
-  window.addEventListener('pointercancel', onPointerUp);
-
-  renderAllCards();
+  setupStackState();
 }
 
 function initScheduleFlip() {
