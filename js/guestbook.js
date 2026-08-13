@@ -44,6 +44,27 @@ function initGuestbook() {
   let messages = getStoredMessages();
   let isAdmin = sessionStorage.getItem(ADMIN_SESSION_KEY) === 'true';
 
+  // Sync from Google Sheets / Supabase cloud DB on load if configured
+  if (typeof CONFIG !== 'undefined' && CONFIG.GOOGLE_SHEET_SCRIPT_URL) {
+    fetchCloudMessages();
+  }
+
+  async function fetchCloudMessages() {
+    try {
+      const res = await fetch(CONFIG.GOOGLE_SHEET_SCRIPT_URL);
+      if (res.ok) {
+        const cloudData = await res.json();
+        if (Array.isArray(cloudData) && cloudData.length > 0) {
+          messages = cloudData;
+          saveMessages(messages);
+          renderMessages();
+        }
+      }
+    } catch (err) {
+      console.warn('Google Sheets sync notice:', err);
+    }
+  }
+
   // Toggle dropdown form
   toggleBtn.addEventListener('click', () => {
     const isExpanded = formContainer.classList.toggle('is-open');
@@ -72,6 +93,20 @@ function initGuestbook() {
     messages.unshift(newMsg);
     saveMessages(messages);
     renderMessages();
+
+    // Post to Google Sheets if URL configured
+    if (typeof CONFIG !== 'undefined' && CONFIG.GOOGLE_SHEET_SCRIPT_URL) {
+      try {
+        fetch(CONFIG.GOOGLE_SHEET_SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(newMsg)
+        });
+      } catch (err) {
+        console.warn('Google Sheets POST notice:', err);
+      }
+    }
 
     // Trigger celebratory confetti
     if (typeof confetti === 'function') {
