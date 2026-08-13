@@ -1,34 +1,15 @@
 /**
  * Guestbook Module (Sổ lưu bút & Lời chúc)
  * Features:
- * - Collapsible form dropdown
- * - Supabase / LocalStorage fallback storage
- * - Secret 5-click admin deletion mode (PIN: 1404)
+ * - Expandable form dropdown
+ * - Displays max 5 wishes on wish wall
+ * - Pinned top wish (5-min priority for newly submitted wish or 5-min random rotation)
+ * - Auto-rotation of bottom 4 wishes every 2 minutes
+ * - Secret 5-click admin deletion switch (PIN: 1404)
  */
 
-const GUESTBOOK_STORAGE_KEY = 'wedding_guestbook_messages_v1';
+const GUESTBOOK_STORAGE_KEY = 'wedding_guestbook_messages_v2';
 const ADMIN_SESSION_KEY = 'wedding_guestbook_admin_active';
-
-const INITIAL_MOCK_MESSAGES = [
-  {
-    id: 'msg-1',
-    name: 'Anh Tuấn & Chị Mai',
-    message: 'Chúc hai em bách niên giai lão, sớm đón quý tử nha! Ngày trọng đại ngập tràn hạnh phúc ❤️',
-    timestamp: '10:30 - 12/08/2026'
-  },
-  {
-    id: 'msg-2',
-    name: 'Minh Hoàng (Hội bạn thân)',
-    message: 'Chúc mừng chú rể đã thoát kiếp F.A! Chúc hai bạn một đời an yên, cùng nhau đi qua trăm năm hạnh phúc ✨',
-    timestamp: '14:15 - 12/08/2026'
-  },
-  {
-    id: 'msg-3',
-    name: 'Chị Thanh Hương',
-    message: 'Thật mừng cho hai em. Chúc tổ ấm nhỏ luôn tràn ngập tiếng cười và sự yêu thương mỗi ngày 💕',
-    timestamp: '09:00 - 13/08/2026'
-  }
-];
 
 function initGuestbook() {
   const sectionLabel = document.getElementById('guestbook-label');
@@ -44,7 +25,12 @@ function initGuestbook() {
   let messages = getStoredMessages();
   let isAdmin = sessionStorage.getItem(ADMIN_SESSION_KEY) === 'true';
 
-  // Sync from Google Sheets / Supabase cloud DB on load if configured
+  let newlySubmittedWish = null;
+  let newWishPinnedTime = 0;
+  let topWishIndex = 0;
+  let bottomTickSeed = Date.now();
+
+  // Sync from Google Sheets cloud DB on load if configured
   if (typeof CONFIG !== 'undefined' && CONFIG.GOOGLE_SHEET_SCRIPT_URL) {
     fetchCloudMessages();
   }
@@ -54,7 +40,7 @@ function initGuestbook() {
       const res = await fetch(CONFIG.GOOGLE_SHEET_SCRIPT_URL);
       if (res.ok) {
         const cloudData = await res.json();
-        if (Array.isArray(cloudData) && cloudData.length > 0) {
+        if (Array.isArray(cloudData)) {
           messages = cloudData;
           saveMessages(messages);
           renderMessages();
@@ -89,6 +75,10 @@ function initGuestbook() {
       message: message,
       timestamp: formatTimestamp(new Date())
     };
+
+    // Priority 5-minute pin at Position 1 for newly submitted wish
+    newlySubmittedWish = newMsg;
+    newWishPinnedTime = Date.now();
 
     messages.unshift(newMsg);
     saveMessages(messages);
@@ -171,18 +161,45 @@ function initGuestbook() {
     }
   }
 
+  function getDisplayedWishes() {
+    if (!messages || messages.length === 0) return [];
+    if (messages.length <= 5) return messages;
+
+    // Position 1: Pinned newly submitted wish (5 mins) or 5-min rotating top wish
+    let topWish = null;
+    const isNewWishActive = newlySubmittedWish && (Date.now() - newWishPinnedTime < 300000); // 5 mins
+
+    if (isNewWishActive) {
+      topWish = newlySubmittedWish;
+    } else {
+      topWish = messages[topWishIndex % messages.length];
+    }
+
+    // Positions 2 - 5: 4 random wishes rotated every 2 minutes
+    const pool = messages.filter((m) => m.id !== topWish.id);
+    const shuffled = pseudoShuffle(pool, bottomTickSeed);
+    const bottomFour = shuffled.slice(0, 4);
+
+    return [topWish, ...bottomFour];
+  }
+
   function renderMessages() {
     listContainer.innerHTML = '';
 
-    if (messages.length === 0) {
+    const displayed = getDisplayedWishes();
+
+    if (displayed.length === 0) {
       listContainer.innerHTML = `<p class="guestbook-empty">Chưa có lời chúc nào. Hãy là người đầu tiên gửi lời chúc nhé! ✨</p>`;
       return;
     }
 
-    messages.forEach((item) => {
+    displayed.forEach((item, idx) => {
       const card = document.createElement('div');
       card.className = 'guestbook-card';
-      
+      if (idx === 0 && (Date.now() - newWishPinnedTime < 300000) && newlySubmittedWish && newlySubmittedWish.id === item.id) {
+        card.classList.add('guestbook-card--pinned');
+      }
+
       const avatarLetter = item.name.charAt(0).toUpperCase();
 
       card.innerHTML = `
@@ -213,18 +230,35 @@ function initGuestbook() {
   }
 
   function deleteMessage(id) {
+    if (newlySubmittedWish && newlySubmittedWish.id === id) {
+      newlySubmittedWish = null;
+    }
     messages = messages.filter((m) => m.id !== id);
     saveMessages(messages);
     renderMessages();
   }
+
+  // Timers:
+  // 1. Every 2 minutes (120,000 ms): Rotate 4 bottom wishes
+  setInterval(() => {
+    bottomTickSeed = Date.now();
+    renderMessages();
+  }, 120000);
+
+  // 2. Every 5 minutes (300,000 ms): Rotate top wish if no active new wish
+  setInterval(() => {
+    if (!newlySubmittedWish || (Date.now() - newWishPinnedTime >= 300000)) {
+      topWishIndex++;
+      renderMessages();
+    }
+  }, 300000);
 
   function getStoredMessages() {
     try {
       const raw = localStorage.getItem(GUESTBOOK_STORAGE_KEY);
       if (raw) return JSON.parse(raw);
     } catch {}
-    localStorage.setItem(GUESTBOOK_STORAGE_KEY, JSON.stringify(INITIAL_MOCK_MESSAGES));
-    return [...INITIAL_MOCK_MESSAGES];
+    return [];
   }
 
   function saveMessages(msgs) {
@@ -246,6 +280,23 @@ function initGuestbook() {
     return str.replace(/[&<>"']/g, (m) => {
       return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' }[m];
     });
+  }
+
+  function pseudoShuffle(arr, seed) {
+    const copy = [...arr];
+    let m = copy.length, t, i;
+    while (m) {
+      i = Math.floor(pseudoRandom(seed + m) * m--);
+      t = copy[m];
+      copy[m] = copy[i];
+      copy[i] = t;
+    }
+    return copy;
+  }
+
+  function pseudoRandom(seed) {
+    const x = Math.sin(seed++) * 10000;
+    return x - Math.floor(x);
   }
 
   renderMessages();
