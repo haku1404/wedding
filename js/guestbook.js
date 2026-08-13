@@ -6,9 +6,11 @@
  * - Pinned top wish (5-min priority for newly submitted wish or 5-min random rotation)
  * - Auto-rotation of bottom 4 wishes every 2 minutes
  * - Secret 5-click admin deletion switch (PIN: 1404)
+ * - Soft-delete support (marks Column E in Google Sheets as "deleted" to preserve violation log in Excel)
  */
 
 const GUESTBOOK_STORAGE_KEY = 'wedding_guestbook_messages_v2';
+const GUESTBOOK_DELETED_KEY = 'wedding_guestbook_deleted_ids_v1';
 const ADMIN_SESSION_KEY = 'wedding_guestbook_admin_active';
 
 function initGuestbook() {
@@ -41,15 +43,18 @@ function initGuestbook() {
       const res = await fetch(CONFIG.GOOGLE_SHEET_SCRIPT_URL);
       if (res.ok) {
         const cloudData = await res.json();
-        if (Array.isArray(cloudData) && cloudData.length > 0) {
-          const isFirstFetch = messages.length === 0;
-          const hasNewWish = !isFirstFetch && cloudData[0] && messages[0] && cloudData[0].id !== messages[0].id;
+        if (Array.isArray(cloudData)) {
+          const deletedIds = getDeletedIds();
+          const activeCloudData = cloudData.filter(item => !deletedIds.includes(item.id) && item.status !== 'deleted');
 
-          messages = cloudData;
+          const isFirstFetch = messages.length === 0;
+          const hasNewWish = !isFirstFetch && activeCloudData[0] && messages[0] && activeCloudData[0].id !== messages[0].id;
+
+          messages = activeCloudData;
           saveMessages(messages);
 
           if (hasNewWish) {
-            newlySubmittedWish = cloudData[0];
+            newlySubmittedWish = activeCloudData[0];
             newWishPinnedTime = Date.now();
           }
 
@@ -83,7 +88,8 @@ function initGuestbook() {
       id: 'msg-' + Date.now(),
       name: name,
       message: message,
-      timestamp: formatTimestamp(new Date())
+      timestamp: formatTimestamp(new Date()),
+      status: 'active'
     };
 
     // Priority 5-minute pin at Position 1 for newly submitted wish
@@ -98,10 +104,12 @@ function initGuestbook() {
     if (typeof CONFIG !== 'undefined' && CONFIG.GOOGLE_SHEET_SCRIPT_URL) {
       try {
         const payload = new URLSearchParams({
+          action: 'add',
           id: newMsg.id,
           name: newMsg.name,
           message: newMsg.message,
-          timestamp: newMsg.timestamp
+          timestamp: newMsg.timestamp,
+          status: 'active'
         });
 
         fetch(CONFIG.GOOGLE_SHEET_SCRIPT_URL, {
@@ -179,21 +187,24 @@ function initGuestbook() {
   }
 
   function getDisplayedWishes() {
-    if (!messages || messages.length === 0) return [];
-    if (messages.length <= 5) return messages;
+    const deletedIds = getDeletedIds();
+    const activeMessages = (messages || []).filter(m => !deletedIds.includes(m.id) && m.status !== 'deleted');
+
+    if (activeMessages.length === 0) return [];
+    if (activeMessages.length <= 5) return activeMessages;
 
     // Position 1: Pinned newly submitted wish (5 mins) or 5-min rotating top wish
     let topWish = null;
-    const isNewWishActive = newlySubmittedWish && (Date.now() - newWishPinnedTime < 300000); // 5 mins
+    const isNewWishActive = newlySubmittedWish && (Date.now() - newWishPinnedTime < 300000) && !deletedIds.includes(newlySubmittedWish.id);
 
     if (isNewWishActive) {
       topWish = newlySubmittedWish;
     } else {
-      topWish = messages[topWishIndex % messages.length];
+      topWish = activeMessages[topWishIndex % activeMessages.length];
     }
 
     // Positions 2 - 5: 4 random wishes rotated every 2 minutes
-    const pool = messages.filter((m) => m.id !== topWish.id);
+    const pool = activeMessages.filter((m) => m.id !== topWish.id);
     const shuffled = pseudoShuffle(pool, bottomTickSeed);
     const bottomFour = shuffled.slice(0, 4);
 
@@ -226,7 +237,7 @@ function initGuestbook() {
             <h4 class="guestbook-card__name">${escapeHtml(item.name)}</h4>
             <span class="guestbook-card__time">${escapeHtml(item.timestamp)}</span>
           </div>
-          ${isAdmin ? `<button class="guestbook-card__delete" data-id="${item.id}" title="Xóa lời chúc này">🗑️ Xóa</button>` : ''}
+          ${isAdmin ? `<button class="guestbook-card__delete" data-id="${item.id}" title="Xóa lời chúc này (Lưu nhật ký vi phạm vào Excel)">🗑️ Xóa</button>` : ''}
         </div>
         <p class="guestbook-card__msg">"${escapeHtml(item.message)}"</p>
       `;
@@ -235,7 +246,7 @@ function initGuestbook() {
         const deleteBtn = card.querySelector('.guestbook-card__delete');
         if (deleteBtn) {
           deleteBtn.addEventListener('click', () => {
-            if (confirm(`Bạn có chắc chắn muốn xóa lời chúc từ "${item.name}" không?`)) {
+            if (confirm(`Bạn có chắc chắn muốn xóa lời chúc từ "${item.name}" không?\n(Nội dung vẫn được lưu trên Google Sheet ở cột Trạng thái là "deleted" để bạn kiểm tra lại sau).`)) {
               deleteMessage(item.id);
             }
           });
@@ -250,9 +261,30 @@ function initGuestbook() {
     if (newlySubmittedWish && newlySubmittedWish.id === id) {
       newlySubmittedWish = null;
     }
+
+    addDeletedId(id);
     messages = messages.filter((m) => m.id !== id);
     saveMessages(messages);
     renderMessages();
+
+    // Soft-delete: Send delete flag action to Google Sheets
+    if (typeof CONFIG !== 'undefined' && CONFIG.GOOGLE_SHEET_SCRIPT_URL) {
+      try {
+        const payload = new URLSearchParams({
+          action: 'delete',
+          id: id
+        });
+
+        fetch(CONFIG.GOOGLE_SHEET_SCRIPT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: payload.toString()
+        });
+      } catch (err) {
+        console.warn('Google Sheets soft-delete notice:', err);
+      }
+    }
   }
 
   // Timers:
@@ -273,7 +305,11 @@ function initGuestbook() {
   function getStoredMessages() {
     try {
       const raw = localStorage.getItem(GUESTBOOK_STORAGE_KEY);
-      if (raw) return JSON.parse(raw);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        const deletedIds = getDeletedIds();
+        return parsed.filter(m => !deletedIds.includes(m.id) && m.status !== 'deleted');
+      }
     } catch {}
     return [];
   }
@@ -282,6 +318,24 @@ function initGuestbook() {
     try {
       localStorage.setItem(GUESTBOOK_STORAGE_KEY, JSON.stringify(msgs));
     } catch {}
+  }
+
+  function getDeletedIds() {
+    try {
+      const raw = localStorage.getItem(GUESTBOOK_DELETED_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch {}
+    return [];
+  }
+
+  function addDeletedId(id) {
+    const list = getDeletedIds();
+    if (!list.includes(id)) {
+      list.push(id);
+      try {
+        localStorage.setItem(GUESTBOOK_DELETED_KEY, JSON.stringify(list));
+      } catch {}
+    }
   }
 
   function formatTimestamp(date) {
