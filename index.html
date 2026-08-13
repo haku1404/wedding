@@ -1,13 +1,27 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Khánh Vy &amp; Đức Anh - Thiệp cưới</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Be+Vietnam+Pro:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Be+Vietnam+Pro:wght@300;400;500;600&display=swap"
+    rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
-  <noscript><style>.preloader{display:none!important}[data-reveal]{opacity:1!important;transform:none!important}</style></noscript>
+  <noscript>
+    <style>
+      .preloader {
+        display: none !important
+      }
+
+      [data-reveal] {
+        opacity: 1 !important;
+        transform: none !important
+      }
+    </style>
+  </noscript>
   <script>
     // Watchdog: if the normal JS/CDN init path never signals "ready" within
     // 3s (script blocked, CDN unreachable, SRI mismatch, runtime error),
@@ -35,6 +49,7 @@
   }
   </script>
 </head>
+
 <body>
   <canvas id="scene" class="scene-canvas" aria-hidden="true"></canvas>
 
@@ -103,9 +118,15 @@
       <!-- Instagram Instants Stack Widget -->
       <div class="instants-container" data-reveal>
         <div class="instants-stack" id="instants-stack">
-          <div class="instants-card"><div class="instants-card__content"></div></div>
-          <div class="instants-card"><div class="instants-card__content"></div></div>
-          <div class="instants-card"><div class="instants-card__content"></div></div>
+          <div class="instants-card">
+            <div class="instants-card__content"></div>
+          </div>
+          <div class="instants-card">
+            <div class="instants-card__content"></div>
+          </div>
+          <div class="instants-card">
+            <div class="instants-card__content"></div>
+          </div>
         </div>
         <p class="instants-hint">Vuốt hoặc chạm vào ảnh để xem khoảnh khắc tiếp theo ⚡</p>
       </div>
@@ -144,11 +165,12 @@
       </div>
     </section>
     <section id="guestbook" class="guestbook">
-      <p class="section-label" id="guestbook-label" data-reveal title="Bấm 5 lần để mở Chế độ Quản trị viên">Sổ lưu bút &amp; Lời chúc</p>
+      <p class="section-label" id="guestbook-label" data-reveal title="Bấm 5 lần để mở Chế độ Quản trị viên">Sổ lưu bút
+        &amp; Lời chúc</p>
 
       <div class="guestbook-container" data-reveal>
         <button id="guestbook-toggle" class="guestbook-toggle-btn" aria-expanded="false">
-          <span>✍️ Gửi lời chúc đến cặp đôi</span>
+          <span>Gửi lời chúc đến cặp đôi</span>
           <span class="guestbook-toggle-btn__icon">▼</span>
         </button>
 
@@ -156,11 +178,13 @@
           <form id="guestbook-form" class="guestbook-form">
             <div class="form-group">
               <label for="guestbook-name">Tên của bạn</label>
-              <input type="text" id="guestbook-name" class="form-control" placeholder="Nhập tên của bạn (VD: Anh Tuấn, Bạn Thân...)" required />
+              <input type="text" id="guestbook-name" class="form-control"
+                placeholder="Nhập tên của bạn (VD: Anh Tuấn, Bạn Thân...)" required />
             </div>
             <div class="form-group">
               <label for="guestbook-message">Lời chúc của bạn</label>
-              <textarea id="guestbook-message" class="form-control" rows="3" placeholder="Gửi lời chúc mừng ngập tràn hạnh phúc đến chú rể & cô dâu..." required></textarea>
+              <textarea id="guestbook-message" class="form-control" rows="3"
+                placeholder="Gửi lời chúc mừng ngập tràn hạnh phúc đến chú rể & cô dâu..." required></textarea>
             </div>
             <button type="submit" class="btn btn-primary btn-submit-wish">Gửi lời chúc ❤️</button>
           </form>
@@ -181,13 +205,20 @@
     </section>
     <footer id="site-footer" class="site-footer">
       <div class="site-footer__names">Khánh Vy <span class="amp">&amp;</span> Đức Anh</div>
-      <p class="site-footer__thanks">Cảm ơn bạn đã dành thời gian ghé thăm trang này. Hẹn gặp bạn trong ngày trọng đại của chúng mình!</p>
+      <p class="site-footer__thanks">Cảm ơn bạn đã dành thời gian ghé thăm trang này. Hẹn gặp bạn trong ngày trọng đại
+        của chúng mình!</p>
     </footer>
   </main>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" integrity="sha512-7eHRwcbYkK4d9g/6tD/mhkf++eoTHwpNM9woBxtPUBWm67zeAfFC+HrdoE2GanKeocly/VxeLvIqwvCdk7qScg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js" integrity="sha512-onMTRKJBKz8M1TnqqDuGBlowlH0ohFzMXYRNebz+yOcc5TQr/zAKsthzhuv0hiyUKEiQEQXEynnXCvNTOk50dg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js" integrity="sha384-sPwMflxqfAN+Q5mvlkLmHiX3PORGbZSXHiSGPTXT9VHCD/AB+b+r+vJWsqprv+7k" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"
+    integrity="sha512-7eHRwcbYkK4d9g/6tD/mhkf++eoTHwpNM9woBxtPUBWm67zeAfFC+HrdoE2GanKeocly/VxeLvIqwvCdk7qScg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"
+    integrity="sha512-onMTRKJBKz8M1TnqqDuGBlowlH0ohFzMXYRNebz+yOcc5TQr/zAKsthzhuv0hiyUKEiQEQXEynnXCvNTOk50dg=="
+    crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"
+    integrity="sha384-sPwMflxqfAN+Q5mvlkLmHiX3PORGbZSXHiSGPTXT9VHCD/AB+b+r+vJWsqprv+7k" crossorigin="anonymous"
+    referrerpolicy="no-referrer"></script>
   <script src="js/config.js"></script>
   <script src="js/guestbook.js"></script>
   <script src="js/main.js" defer></script>
@@ -195,4 +226,5 @@
        the preloader, timeline, lightbox and RSVP keep working. -->
   <script type="module" src="js/scene3d.js"></script>
 </body>
+
 </html>
