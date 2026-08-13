@@ -87,11 +87,18 @@ function initGuestbook() {
     // Post to Google Sheets if URL configured
     if (typeof CONFIG !== 'undefined' && CONFIG.GOOGLE_SHEET_SCRIPT_URL) {
       try {
+        const payload = new URLSearchParams({
+          id: newMsg.id,
+          name: newMsg.name,
+          message: newMsg.message,
+          timestamp: newMsg.timestamp
+        });
+
         fetch(CONFIG.GOOGLE_SHEET_SCRIPT_URL, {
           method: 'POST',
           mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(newMsg)
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: payload.toString()
         });
       } catch (err) {
         console.warn('Google Sheets POST notice:', err);
